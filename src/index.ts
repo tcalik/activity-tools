@@ -19,9 +19,20 @@ export let parseActivityToArray = (activity: XMLDocument) => {
 };
 
 let parseNodeToObj = (currentNode: Element) => {
+  let extension = currentNode
+    .getElementsByTagName("extensions")[0]
+    .childNodes[1].nodeName.split(":")[0];
+
   let nodeObj = {
     lat: currentNode.attributes[0].value,
     lon: currentNode.attributes[1].value,
+    ele: currentNode.getElementsByTagName("ele")[0].textContent,
+    time: currentNode.getElementsByTagName("time")[0].textContent,
+    hr: currentNode.getElementsByTagName(
+      `${extension ? extension + ":" : ""}hr`
+    )[0].textContent,
   };
   return nodeObj;
 };
+
+console.log(parseActivityToArray(testActivity))
