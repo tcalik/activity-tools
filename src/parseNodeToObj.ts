@@ -8,6 +8,7 @@ type TrackpointElement = {
   temp?: number;
 };
 
+
 const parseNodeToObj = (currentNode: Element) => {
   let extension = currentNode
     .getElementsByTagName("extensions")[0]
