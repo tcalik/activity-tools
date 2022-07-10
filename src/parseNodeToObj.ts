@@ -8,21 +8,19 @@ type TrackpointElement = {
   temp?: number;
 };
 
-
 const parseNodeToObj = (currentNode: Element) => {
   let extension = currentNode
     .getElementsByTagName("extensions")[0]
     .childNodes[1].nodeName.split(":")[0];
 
-    // New Trackpoint object is always initialized with the latitude and longtitude properties
+  // New Trackpoint object is always initialized with the latitude and longtitude properties
   let nodeObj: TrackpointElement = {
     lat: parseFloat(currentNode.attributes[0].value),
     lon: parseFloat(currentNode.attributes[1].value),
   };
 
-
   // Read existing properties from node
-  let nodeTime = currentNode.getElementsByTagName("time")[0]?.textContent
+  let nodeTime = currentNode.getElementsByTagName("time")[0]?.textContent;
   let elevation = currentNode.getElementsByTagName("ele")[0]?.textContent;
   let heartRate = currentNode.getElementsByTagName(
     `${extension ? extension + ":" : ""}hr`

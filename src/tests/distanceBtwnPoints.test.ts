@@ -14,6 +14,6 @@ describe("Distance between points", () => {
       secondNode.lat,
       secondNode.lon
     );
-    expect(distance).to.equal(4.455)
+    expect(distance).to.equal(4.455);
   });
 });
