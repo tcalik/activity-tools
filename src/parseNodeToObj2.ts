@@ -8,7 +8,7 @@ type TrackpointElement = {
   atemp?: number;
 };
 
-const parseNodeToObj = (currentNode: any) => {
+const parseNodeToObj2 = (currentNode: any) => {
   // Destructuring
   let { lat, lon, ele, time } = currentNode;
   let { atemp, hr, cad } = currentNode.extensions.TrackPointExtension;
@@ -34,6 +34,6 @@ const parseNodeToObj = (currentNode: any) => {
     trackPoint.hr = parseInt(hr);
   }
 
-  return trackPoint;
+  console.log(trackPoint);
 };
-export default parseNodeToObj;
+export default parseNodeToObj2;

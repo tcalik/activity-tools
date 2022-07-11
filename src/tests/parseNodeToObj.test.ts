@@ -1,13 +1,16 @@
 import chai, { expect } from "chai";
 import "mocha";
 import parseNodeToObj from "../parseNodeToObj";
-import * as fs from "fs";
-import { DOMParser } from "xmldom";
+import { XMLParser } from "fast-xml-parser";
 
-const parser = new DOMParser();
+const parser = new XMLParser({
+  removeNSPrefix: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+});
 
-let testNode: Element = parser
-  .parseFromString(
+let testNode: any = parser
+  .parse(
     `<trkpt lat="50.0525730" lon="19.9232390">
 <ele>198.4</ele>
 <time>2022-05-27T03:38:23Z</time>
@@ -18,10 +21,10 @@ let testNode: Element = parser
   <gpxtpx:cad>0</gpxtpx:cad>
  </gpxtpx:TrackPointExtension>
 </extensions>
-</trkpt>`,
-    "utf-8"
-  )
-  .getElementsByTagName("trkpt")[0];
+</trkpt>`
+  ).trkpt;
+
+
 
 let parsedNode = parseNodeToObj(testNode);
 
@@ -30,7 +33,7 @@ describe("Parser tests", () => {
     expect(parsedNode.lat).to.equal(50.052573);
     expect(parsedNode.lon).to.equal(19.923239);
     expect(parsedNode.ele).to.equal(198.4);
-    expect(parsedNode.temp).to.equal(25);
+    expect(parsedNode.atemp).to.equal(25);
     expect(parsedNode.hr).to.equal(116);
     expect(parsedNode.cad).to.equal(0);
     expect(parsedNode.time).to.equal("2022-05-27T03:38:23Z");

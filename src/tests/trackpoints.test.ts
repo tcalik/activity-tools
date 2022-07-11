@@ -2,14 +2,16 @@ import chai, { expect } from "chai";
 import "mocha";
 import { parseActivityToArray } from "../index";
 import * as fs from "fs";
-import { DOMParser } from "xmldom";
+import { XMLParser } from "fast-xml-parser";
 
-const parser = new DOMParser();
-
+const parser = new XMLParser({
+  removeNSPrefix: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+});
 const fileToParse = fs.readFileSync(`${__dirname}/8_AWF.gpx`, "utf-8");
-let testActivity: XMLDocument = parser.parseFromString(
-  fileToParse,
-  "text/xml"
+let testActivity: XMLDocument = parser.parse(
+  fileToParse
 );
 let parsedActivty = parseActivityToArray(testActivity)
 
