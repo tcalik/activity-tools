@@ -8,9 +8,10 @@ type TrackpointElement = {
   atemp?: number;
 };
 
+// Destructuring and flattening parsed trackpoint
 const parseNodeToObj = (currentNode: any) => {
-  // Destructuring
   let { lat, lon, ele, time } = currentNode;
+
   let { atemp, hr, cad } = currentNode.extensions.TrackPointExtension;
 
   let trackPoint: TrackpointElement = {
@@ -19,19 +20,19 @@ const parseNodeToObj = (currentNode: any) => {
   };
 
   if (ele) {
-    trackPoint.ele = parseFloat(ele);
+    trackPoint.ele = ele;
   }
   if (time) {
     trackPoint.time = time;
   }
-  if (atemp || parseInt(atemp) === 0) {
-    trackPoint.atemp = parseInt(atemp);
+  if (atemp || atemp == 0) {
+    trackPoint.atemp = atemp;
   }
-  if (cad || parseInt(cad) === 0) {
-    trackPoint.cad = parseInt(cad);
+  if (cad || cad == 0) {
+    trackPoint.cad = cad;
   }
-  if (hr || parseInt(hr) === 0) {
-    trackPoint.hr = parseInt(hr);
+  if (hr || hr == 0) {
+    trackPoint.hr = hr;
   }
 
   return trackPoint;

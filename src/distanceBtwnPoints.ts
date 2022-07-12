@@ -1,9 +1,8 @@
-const distanceBtwnPoints = (
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-) => {
+const distanceBtwnPoints = (firstNode: any, secondNode: any) => {
+  let lat1 = firstNode.lat;
+  let lon1 = firstNode.lon;
+  let lat2 = secondNode.lat;
+  let lon2 = secondNode.lon;
   // Convert degrees to radians
   lat1 = (lat1 * Math.PI) / 180.0;
   lon1 = (lon1 * Math.PI) / 180.0;
@@ -11,7 +10,7 @@ const distanceBtwnPoints = (
   lon2 = (lon2 * Math.PI) / 180.0;
 
   // radius of earth in metres
-  let r = 6378137;
+  let r = 6370000;
   // P
   let rho1 = r * Math.cos(lat1);
   let z1 = r * Math.sin(lat1);
@@ -27,6 +26,7 @@ const distanceBtwnPoints = (
   // Dot product
   let dot = x1 * x2 + y1 * y2 + z1 * z2;
   let cos_theta = dot / (r * r);
+  if (cos_theta > 1) cos_theta = 1;
   let theta = Math.acos(cos_theta);
 
   // Distance in Metres

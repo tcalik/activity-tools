@@ -8,12 +8,7 @@ const secondNode = { lat: 50.052612, lon: 19.923253 };
 
 describe("Distance between points", () => {
   it("Correctly calculates distance between two points", () => {
-    let distance = distanceBtwnPoints(
-      firstNode.lat,
-      firstNode.lon,
-      secondNode.lat,
-      secondNode.lon
-    );
-    expect(distance).to.equal(4.455);
+    let distance = distanceBtwnPoints(firstNode, secondNode);
+    expect(distance).to.equal(4.449);
   });
 });

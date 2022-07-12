@@ -9,7 +9,7 @@ const parser = new XMLParser({
   attributeNamePrefix: "",
 });
 
-let testNode: any = parser
+let testNode: Element = parser
   .parse(
     `<trkpt lat="50.0525730" lon="19.9232390">
 <ele>198.4</ele>
