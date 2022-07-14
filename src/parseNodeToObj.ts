@@ -1,4 +1,4 @@
-type TrackpointElement = {
+export type TrackpointElement = {
   lat: number;
   lon: number;
   ele?: number;
