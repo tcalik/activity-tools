@@ -1,4 +1,4 @@
-import chai, { expect } from "chai";
+import chai, { expect, assert } from "chai";
 import "mocha";
 import parseNodeToObj from "../parseNodeToObj";
 import { XMLParser } from "fast-xml-parser";
@@ -29,6 +29,7 @@ let testNode: Element = parser
 let parsedNode = parseNodeToObj(testNode);
 
 describe("Parser tests", () => {
+  let date = new Date("2022-05-27T03:38:23Z")
   it("Reads properties of test node correctly", () => {
     expect(parsedNode.lat).to.equal(50.052573);
     expect(parsedNode.lon).to.equal(19.923239);
@@ -36,6 +37,6 @@ describe("Parser tests", () => {
     expect(parsedNode.atemp).to.equal(25);
     expect(parsedNode.hr).to.equal(116);
     expect(parsedNode.cad).to.equal(0);
-    expect(parsedNode.time).to.equal("2022-05-27T03:38:23Z");
+    assert.deepEqual(parsedNode.time, date);
   });
 });

@@ -2,7 +2,7 @@ export type TrackpointElement = {
   lat: number;
   lon: number;
   ele?: number;
-  time?: string;
+  time: Date;
   hr?: number;
   cad?: number;
   atemp?: number;
@@ -17,13 +17,11 @@ const parseNodeToObj = (currentNode: any) => {
   let trackPoint: TrackpointElement = {
     lat: parseFloat(lat),
     lon: parseFloat(lon),
+    time: new Date(time),
   };
 
   if (ele) {
     trackPoint.ele = ele;
-  }
-  if (time) {
-    trackPoint.time = time;
   }
   if (atemp || atemp == 0) {
     trackPoint.atemp = atemp;

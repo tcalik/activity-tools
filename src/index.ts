@@ -15,18 +15,12 @@ const fileToParse = fs.readFileSync(`${__dirname}/tests/8_AWF.gpx`, "utf-8");
 let jsonObj = parser.parse(fileToParse);
 
 export class Activity {
-  parsedActivity: TrackpointElement[];
-  fullInfoActivity: {
-    distanceFromLast: number;
-    totalDistance: number;
-  }[];
-  totalDistance: number;
+  parsedActivity: any;
+  fullInfoActivity: any;
 
   constructor(XMLActivity: any) {
     this.parsedActivity = this.parseActivityToArray(XMLActivity);
     this.fullInfoActivity = this.fullActivityInfo();
-    this.totalDistance =
-      this.fullInfoActivity[this.fullInfoActivity.length - 1].totalDistance;
   }
 
   parseActivityToArray(activity: any) {
@@ -49,18 +43,61 @@ export class Activity {
       let currentNode = this.parsedActivity[idx];
       if (idx > 0) {
         let previousNode = activityArray[idx - 1];
-        totalDistance += distanceBtwnPoints(previousNode, currentNode);
+        let distanceDifference = distanceBtwnPoints(previousNode, currentNode);
+        let timeDifference =
+          (new Date(currentNode.time).getTime() -
+            new Date(previousNode.time).getTime()) /
+          1000;
+
+        let speedAtInterval = parseFloat(
+          ((distanceDifference / timeDifference) * 3.6).toFixed(2)
+        );
+
+        totalDistance += distanceDifference;
         activityArray.push({
           ...this.parsedActivity[idx],
           totalDistance: totalDistance,
           distanceFromLast: distanceBtwnPoints(previousNode, currentNode),
+          speed: speedAtInterval,
         });
       }
     }
     return activityArray;
   }
+  get totalDistance() {
+    let totalDistance = 0;
+    for (let index in this.parsedActivity) {
+      let idx = parseInt(index);
+      let currentNode = this.parsedActivity[idx];
+      if (idx > 0) {
+        let previousNode = this.parsedActivity[idx - 1];
+        let distanceDifference = distanceBtwnPoints(previousNode, currentNode);
+        totalDistance += distanceDifference;
+      }
+    }
+    return parseFloat(totalDistance.toFixed(2));
+  }
+  get averageSpeed() {
+    let activity = this.parsedActivity;
+    let speed = parseFloat(
+      (
+        (3.6 * this.totalDistance) /
+        ((activity[activity.length - 1].time - activity[0].time) / 1000)
+      ).toFixed(2)
+    );
+    return speed;
+  }
+
+  get averageHeartRate() {
+    let hrSum = 0;
+    for (let index in this.parsedActivity) {
+      let idx = parseInt(index);
+      let currentNode = this.parsedActivity[idx];
+      hrSum += currentNode.hr;
+    }
+    let averageHR = hrSum / this.parsedActivity.length;
+    return Math.round(averageHR);
+  }
 }
 
 let newActivity = new Activity(jsonObj);
-newActivity.fullActivityInfo();
-console.log(newActivity);
