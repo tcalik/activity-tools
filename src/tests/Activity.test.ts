@@ -1,6 +1,6 @@
 import chai, { expect } from "chai";
 import "mocha";
-import { Activity } from "../index";
+import { Activity } from "../Activity";
 import * as fs from "fs";
 import { XMLParser } from "fast-xml-parser";
 
