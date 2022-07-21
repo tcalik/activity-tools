@@ -1,17 +1,16 @@
 import parseNodeToObj from "./parseNodeToObj";
 import distanceBtwnPoints from "./distanceBtwnPoints";
-import type { TrackpointElement } from "./parseNodeToObj";
+import type { ParsedTrackpoint } from "./interfaces/ParsedTrackpoint.interface";
+import type { ParsedGPX } from "./interfaces/ParsedGPX.interface";
 
 export class Activity {
-    parsedActivity: any;
-    fullInfoActivity: any;
+    parsedActivity: ParsedTrackpoint[];
   
-    constructor(XMLActivity: any) {
+    constructor(XMLActivity: ParsedGPX) {
       this.parsedActivity = this.parseActivityToArray(XMLActivity);
-      this.fullInfoActivity = this.fullActivityInfo();
     }
   
-    parseActivityToArray(activity: any) {
+    parseActivityToArray(activity: ParsedGPX) {
       let trkptArray = activity.gpx.trk.trkseg.trkpt;
       let activityArray = [];
       for (let index in trkptArray) {
@@ -21,37 +20,6 @@ export class Activity {
       return activityArray;
     }
   
-    fullActivityInfo() {
-      let totalDistance = 0;
-      let activityArray = [
-        { ...this.parsedActivity[0], totalDistance: 0, distanceFromLast: 0 },
-      ];
-      for (let index in this.parsedActivity) {
-        let idx = parseInt(index);
-        let currentNode = this.parsedActivity[idx];
-        if (idx > 0) {
-          let previousNode = activityArray[idx - 1];
-          let distanceDifference = distanceBtwnPoints(previousNode, currentNode);
-          let timeDifference =
-            (new Date(currentNode.time).getTime() -
-              new Date(previousNode.time).getTime()) /
-            1000;
-  
-          let speedAtInterval = parseFloat(
-            ((distanceDifference / timeDifference) * 3.6).toFixed(2)
-          );
-  
-          totalDistance += distanceDifference;
-          activityArray.push({
-            ...this.parsedActivity[idx],
-            totalDistance: totalDistance,
-            distanceFromLast: distanceBtwnPoints(previousNode, currentNode),
-            speed: speedAtInterval,
-          });
-        }
-      }
-      return activityArray;
-    }
     get totalDistance() {
       let totalDistance = 0;
       for (let index in this.parsedActivity) {
@@ -70,7 +38,7 @@ export class Activity {
       let speed = parseFloat(
         (
           (3.6 * this.totalDistance) /
-          ((activity[activity.length - 1].time - activity[0].time) / 1000)
+          ((activity[activity.length - 1].time.getTime() - activity[0].time.getTime()) / 1000)
         ).toFixed(2)
       );
       return speed;
@@ -78,12 +46,18 @@ export class Activity {
   
     get averageHeartRate() {
       let hrSum = 0;
+      let noHeartRateNodes = 0
       for (let index in this.parsedActivity) {
         let idx = parseInt(index);
         let currentNode = this.parsedActivity[idx];
+        if(currentNode.hr){
         hrSum += currentNode.hr;
+        }
+        else{
+          noHeartRateNodes++
+        }
       }
-      let averageHR = hrSum / this.parsedActivity.length;
+      let averageHR = hrSum / this.parsedActivity.length - noHeartRateNodes;
       return Math.round(averageHR);
     }
   }

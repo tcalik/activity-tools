@@ -3,6 +3,7 @@ import "mocha";
 import { Activity } from "../Activity";
 import * as fs from "fs";
 import { XMLParser } from "fast-xml-parser";
+import type { ParsedGPX } from "../interfaces/ParsedGPX.interface";
 
 const parser = new XMLParser({
   removeNSPrefix: true,
@@ -10,7 +11,7 @@ const parser = new XMLParser({
   attributeNamePrefix: "",
 });
 const fileToParse = fs.readFileSync(`${__dirname}/8_AWF.gpx`, "utf-8");
-let testActivity: XMLDocument = parser.parse(
+let testActivity: ParsedGPX = parser.parse(
   fileToParse
 );
 let newActivity = new Activity(testActivity)

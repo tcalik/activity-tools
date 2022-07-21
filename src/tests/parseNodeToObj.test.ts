@@ -2,6 +2,7 @@ import chai, { expect, assert } from "chai";
 import "mocha";
 import parseNodeToObj from "../parseNodeToObj";
 import { XMLParser } from "fast-xml-parser";
+import type { GPXTrackpoint } from "../interfaces/GPXTrackpoint.interface";
 
 const parser = new XMLParser({
   removeNSPrefix: true,
@@ -9,7 +10,7 @@ const parser = new XMLParser({
   attributeNamePrefix: "",
 });
 
-let testNode: Element = parser
+let testNode: GPXTrackpoint = parser
   .parse(
     `<trkpt lat="50.0525730" lon="19.9232390">
 <ele>198.4</ele>

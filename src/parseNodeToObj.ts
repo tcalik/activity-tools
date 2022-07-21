@@ -1,20 +1,10 @@
-export type TrackpointElement = {
-  lat: number;
-  lon: number;
-  ele?: number;
-  time: Date;
-  hr?: number;
-  cad?: number;
-  atemp?: number;
-};
-
+import type { ParsedTrackpoint } from "./interfaces/ParsedTrackpoint.interface";
+import type { GPXTrackpoint } from "./interfaces/GPXTrackpoint.interface";
 // Destructuring and flattening parsed trackpoint
-const parseNodeToObj = (currentNode: any) => {
+const parseNodeToObj = (currentNode: GPXTrackpoint) => {
   let { lat, lon, ele, time } = currentNode;
 
-  let { atemp, hr, cad } = currentNode.extensions.TrackPointExtension;
-
-  let trackPoint: TrackpointElement = {
+  let trackPoint: ParsedTrackpoint = {
     lat: parseFloat(lat),
     lon: parseFloat(lon),
     time: new Date(time),
@@ -23,14 +13,19 @@ const parseNodeToObj = (currentNode: any) => {
   if (ele) {
     trackPoint.ele = ele;
   }
-  if (atemp || atemp == 0) {
-    trackPoint.atemp = atemp;
-  }
-  if (cad || cad == 0) {
-    trackPoint.cad = cad;
-  }
-  if (hr || hr == 0) {
-    trackPoint.hr = hr;
+
+  if (currentNode.extensions?.TrackPointExtension) {
+    let { atemp, hr, cad } = currentNode.extensions.TrackPointExtension;
+
+    if (atemp || atemp == 0) {
+      trackPoint.atemp = atemp;
+    }
+    if (cad || cad == 0) {
+      trackPoint.cad = cad;
+    }
+    if (hr || hr == 0) {
+      trackPoint.hr = hr;
+    }
   }
 
   return trackPoint;
