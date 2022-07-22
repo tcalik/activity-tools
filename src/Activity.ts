@@ -1,5 +1,7 @@
 import parseNodeToObj from "./parseNodeToObj";
 import distanceBtwnPoints from "./distanceBtwnPoints";
+import { loopThroughByPair } from "./utils/pairLoopInArray";
+import { timeDifference } from "./utils/timeDifference";
 import type { ParsedTrackpoint } from "./interfaces/ParsedTrackpoint.interface";
 import type { ParsedGPX } from "./interfaces/ParsedGPX.interface";
 
@@ -16,27 +18,23 @@ export class Activity {
 
   parseGPXToArray(activity: ParsedGPX) {
     let trkptArray = activity.gpx.trk.trkseg.trkpt;
-    let activityArray = [];
-    for (let index in trkptArray) {
-      let idx = parseInt(index);
-      activityArray.push(parseNodeToObj(trkptArray[idx]));
-    }
+    let activityArray: ParsedTrackpoint[] = [];
+    trkptArray.forEach((trackpoint) => {
+      activityArray.push(parseNodeToObj(trackpoint));
+    });
     return activityArray;
   }
 
   get totalDistance() {
     let totalDistance = 0;
-    for (let index in this.parsedActivity) {
-      let idx = parseInt(index);
-      let currentNode = this.parsedActivity[idx];
-      if (idx > 0) {
-        let previousNode = this.parsedActivity[idx - 1];
-        let distanceDifference = distanceBtwnPoints(previousNode, currentNode);
-        totalDistance += distanceDifference;
-      }
-    }
+
+    loopThroughByPair(this.parsedActivity, (prev: any, curr: any) => {
+      totalDistance += distanceBtwnPoints(prev, curr);
+    });
+
     return parseFloat(totalDistance.toFixed(2));
   }
+
   get averageSpeed() {
     let activity = this.parsedActivity;
     let speed = parseFloat(
@@ -53,40 +51,31 @@ export class Activity {
   get averageHeartRate() {
     let hrSum = 0;
     let noHeartRateNodes = 0;
-    for (let index in this.parsedActivity) {
-      let idx = parseInt(index);
-      let currentNode = this.parsedActivity[idx];
-      if (currentNode.hr) {
-        hrSum += currentNode.hr;
+
+    this.parsedActivity.forEach((trackpoint) => {
+      if (trackpoint.hr) {
+        hrSum += trackpoint.hr;
       } else {
         noHeartRateNodes++;
       }
-    }
+    });
+
     let averageHR = hrSum / this.parsedActivity.length - noHeartRateNodes;
     return Math.round(averageHR);
   }
 
   get speedAtNode() {
     let speedNodeArray = [0];
-    for (let index in this.parsedActivity) {
-      let idx = parseInt(index);
-      let currentNode = this.parsedActivity[idx];
-      if (idx > 0) {
-        let previousNode, distanceDifference, currentSpeed, timeDifference;
-        previousNode = this.parsedActivity[idx - 1];
-        distanceDifference = distanceBtwnPoints(previousNode, currentNode);
-        timeDifference =
-          (currentNode.time.getTime() - previousNode.time.getTime()) / 1000;
-        currentSpeed = parseFloat(
-          ((3.6 * distanceDifference) / timeDifference).toFixed(2)
-        );
-        speedNodeArray.push(currentSpeed);
-      }
-    }
+
+    loopThroughByPair(this.parsedActivity, (prev: any, curr: any) => {
+      let distanceDifference = distanceBtwnPoints(prev, curr);
+      let timeDiff = timeDifference(curr, prev);
+      speedNodeArray.push(
+        parseFloat(((3.6 * distanceDifference) / timeDiff).toFixed(2))
+      );
+    });
     return speedNodeArray;
   }
 }
-// TODO: refactoring -  pair loop through array
 // TODO: TPX parsing
 // TODO: Interval data. Interval speed, distance, time.
-
