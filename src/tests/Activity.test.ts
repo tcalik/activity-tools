@@ -24,7 +24,7 @@ describe("Activity class tests", () => {
     expect(newActivity.averageSpeed).to.equal(10.48);
   });
   it("Calculates average heart rate", () => {
-    expect(newActivity.averageHeartRate).to.equal(94);
+    expect(newActivity.averagePropertyAtInterval(0, newActivity.parsedActivity.length, "hr")).to.equal(94);
   });
   it("Return speed at specific node", () => {
     expect(newActivity.speedAtNode[10]).to.equal(6.68);
