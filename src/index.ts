@@ -12,5 +12,3 @@ const fileToParse = fs.readFileSync(`${__dirname}/tests/8_AWF.gpx`, "utf-8");
 
 let jsonObj = parser.parse(fileToParse);
 let newActivity = new Activity(jsonObj);
-
-console.log(newActivity.speedAtInterval(0, newActivity.parsedActivity.length-1))

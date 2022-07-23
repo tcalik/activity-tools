@@ -56,11 +56,10 @@ export class Activity {
 
   get speedAtNode() {
     let speedNodeArray = [0];
-    loopThroughByPair(this.parsedActivity, (prev: any, curr: any) => {
+    loopThroughByPair(this.parsedActivity, (prev: ParsedTrackpoint, curr: ParsedTrackpoint) => {
       let distanceDifference = distanceBtwnPoints(prev, curr);
       let timeDiff = timeDifference(prev, curr);
-      speedNodeArray.push(
-        parseFloat(((3.6 * distanceDifference) / timeDiff).toFixed(2))
+      speedNodeArray.push(parseFloat(((3.6 * distanceDifference) / timeDiff).toFixed(2))
       );
     });
     return speedNodeArray;
@@ -80,27 +79,46 @@ export class Activity {
   distanceAtInterval(startIndex: number, endIndex: number) {
     let distance = 0;
     let interval = this.parsedActivity.slice(startIndex, endIndex);
-    loopThroughByPair(interval, (prev: any, curr: any) => {
-      distance += distanceBtwnPoints(prev, curr);
-    });
+    loopThroughByPair(
+      interval,
+      (prev: ParsedTrackpoint, curr: ParsedTrackpoint) => {
+        distance += distanceBtwnPoints(prev, curr);
+      }
+    );
     return parseFloat(distance.toFixed(2));
   }
-  
-averagePropertyAtInterval(startIndex:number, endIndex:number, propertyName: "hr" | "cad" | "atemp"){
-  let propertySum = 0;
-  let interval = this.parsedActivity.slice(startIndex, endIndex)
-  interval.forEach((trackpoint) => {
-    let x = trackpoint[propertyName]
-    if (x) {
-      propertySum += x;
-    } 
-  });
 
-  let averageProperty = propertySum / interval.length;
-  return Math.round(averageProperty);
-}
+  averagePropertyAtInterval(
+    startIndex: number,
+    endIndex: number,
+    propertyName: "hr" | "cad" | "atemp"
+  ) {
+    let propertySum = 0;
+    let interval = this.parsedActivity.slice(startIndex, endIndex);
+    interval.forEach((trackpoint) => {
+      let x = trackpoint[propertyName];
+      if (x) {
+        propertySum += x;
+      }
+    });
 
+    let averageProperty = propertySum / interval.length;
+    return Math.round(averageProperty);
+  }
 
+  get fullInfoActivity() {
+    let fullActivity: any = [...this.parsedActivity];
+    //fullActivity = fullActivity.slice(0, 5);
+    fullActivity[0].distanceFromLast = 0;
+    for (let index in fullActivity){fullActivity[parseInt(index)].speed = this.speedAtNode[parseInt(index)]}
+    loopThroughByPair(
+      fullActivity,
+      (prev: ParsedTrackpoint, curr: ParsedTrackpoint, index: number) => {
+        fullActivity[index].distanceFromLast = distanceBtwnPoints(prev, curr);
+      }
+    );
+    return fullActivity;
+  }
 }
 // TODO: TCX parsing
 // TODO: Interval data. Interval speed, distance, time.
